@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
 
 void main() {
+  final img = Image.asset('images/banana.png');
   final col = Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Text('レモン'),
-        Text('りんご'),
-        Text('ブドウ'),
-      ]);
+    mainAxisAlignment: MainAxisAlignment.center,
+    crossAxisAlignment: CrossAxisAlignment.center,
+    children: [img, img, img],
+  );
 
   final row = Row(
     mainAxisAlignment: MainAxisAlignment.center,
