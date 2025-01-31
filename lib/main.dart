@@ -14,10 +14,25 @@ void main() {
     children: [col, col, col],
   );
 
+  final con2 = Container(
+    color: Colors.blue,
+    width: 50,
+    height: 50,
+  );
+
+  final con = Container(
+    color: Colors.deepOrange,
+    width: 200,
+    height: 130,
+    child: con2,
+    alignment: Alignment.centerLeft,
+    padding: EdgeInsets.all(20),
+  );
+
   final a = MaterialApp(
     home: Scaffold(
       body: Center(
-        child: row,
+        child: con,
       ),
     ),
   );
