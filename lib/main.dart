@@ -1,69 +1,68 @@
-// ignore_for_file: sized_box_for_whitespace
-
-/*
-  最新のFlutterに対応するため、動画と少しコードが変わりました
-  コントローラーの正しい使い方は、別の動画で説明します
-
-  ↓↓ 別の動画 ↓↓
-  https://youtu.be/l1sUCFtcsjo?si=tT8Swp7GuzmbQ6lv
-*/
-
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-void main() {
-  // テキストフィールド の コントローラー
-  final controller = TextEditingController();
-
-  // テキストフィールド本体
-  final textField = TextField(
-    // コントローラ を このテキストフィールドに結びつける
-    controller: controller,
-    // デコレーション
-    decoration: const InputDecoration(
-      border: OutlineInputBorder(),
-      labelText: "あなたの名前",
-      hintText: "カタカナで入力してください",
-      errorText: null, // エラーメッセージは今回使わない。ここに書いたり消したりできる。
-    ),
-  );
-
-  // 関数
-  xxxx() {
-    // コントローラーから文字を取り出して確認
-    debugPrint(controller.text);
-  }
-
-  // ボタン
-  final button = ElevatedButton(
-    // 関数を このボタンに結びつけておく
-    onPressed: xxxx,
-    child: const Text('ボタンです'),
-  );
-
+main() {
   // アプリ
-  final app = MaterialApp(
-    // 画面
-    home: Scaffold(
-      // 真ん中
-      body: Center(
-        // 縦に並べる
+  const app = MaterialApp(home: Example());
+  // プロバイダースコープでアプリを囲む
+  const scope = ProviderScope(child: app);
+  runApp(scope);
+}
+
+// プロバイダー
+final nicknameProvider = StateProvider<String>((ref) {
+  // 変化するデータ
+  return "ルビードッグ";
+});
+
+// 画面
+class Example extends ConsumerWidget {
+  const Example({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    // データを見張っておく
+    final nickname = ref.watch(nicknameProvider);
+
+    return Scaffold(
+      // ニックネーム 1
+      appBar: AppBar(title: Text(nickname)),
+      body: SizedBox(
+        width: double.infinity,
         child: Column(
-          // いい感じにスペース開ける
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // コンテナ
-            Container(
-              width: 300, // 横幅
-              child: textField, // テキストフィールド
-            ),
-            // ボタンをおく
-            button,
+            // ニックネーム 2
+            Text(nickname),
+            // ボタン A
+            ElevatedButton(onPressed: () => tapA(ref), child: const Text('A')),
+            // ボタン B
+            ElevatedButton(onPressed: () => tapB(ref), child: const Text('B')),
+            // ボタン C
+            ElevatedButton(onPressed: () => tapC(ref), child: const Text('C')),
+            // ニックネーム 3
+            Text(nickname),
           ],
         ),
       ),
-    ),
-  );
+    );
+  }
 
-  // アプリを動かす
-  runApp(app);
+  // ノティファイア でデータを変更する
+
+  tapA(WidgetRef ref) {
+    final notifier = ref.read(nicknameProvider.notifier);
+    notifier.state = 'ルビーキャット';
+  }
+
+  tapB(WidgetRef ref) {
+    final notifier = ref.read(nicknameProvider.notifier);
+    notifier.state = 'ルビーバード';
+  }
+
+  tapC(WidgetRef ref) {
+    final notifier = ref.read(nicknameProvider.notifier);
+    notifier.state = 'ルビーフィッシュ';
+  }
 }
