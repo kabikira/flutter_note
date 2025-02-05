@@ -1,24 +1,31 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 //
 // 画面 A
 //
-class PageA extends StatelessWidget {
+class PageA extends StatefulWidget {
   const PageA({super.key});
 
   @override
+  State<PageA> createState() => _PageAState();
+}
+
+class _PageAState extends State<PageA> {
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.red[100],
-      body: const Center(
-        child: Text(
-          '画面 A',
-          style: TextStyle(
-            // 文字の大きさ
-            fontSize: 20,
-            // 文字の太さ
-            fontWeight: FontWeight.bold,
-          ),
+      appBar: AppBar(
+        backgroundColor: Colors.red,
+        title: const Text('画面 A'),
+      ),
+      body: Center(
+        child: ElevatedButton(
+          onPressed: () {
+            context.push('/b');
+          },
+          style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+          child: const Text('進む >'),
         ),
       ),
     );

@@ -2,61 +2,66 @@ import 'package:flutter/material.dart';
 import 'package:flutter_note/page_a.dart';
 import 'package:flutter_note/page_b.dart';
 import 'package:flutter_note/page_c.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
-main() {
-  const app = MaterialApp(home: Root());
-  const scope = ProviderScope(child: app);
-  runApp(scope);
+/*
+  最新のFlutterに対応するため、動画と少しコードが変わりました
+*/
+
+class CustomRouterObserver extends NavigatorObserver {
+  @override
+  void didPop(Route route, Route? previousRoute) {
+    super.didPop(route, previousRoute);
+    print(
+        "🔄 画面が戻った: ${route.settings.name} → ${previousRoute?.settings.name}");
+
+    if (previousRoute?.settings.name == "/a") {
+      print("✅ PageBからPageAに戻ってきた！");
+      // ここでAPIリロードやデータ更新が可能
+    }
+  }
 }
 
-final indexProvider = StateProvider((ref) {
-  // 変化させたいデータ
-  return 0;
-});
+main() {
+  final app = App();
+  runApp(app);
+}
 
-class Root extends ConsumerWidget {
-  const Root({super.key});
+// アプリ全体
+class App extends StatelessWidget {
+  App({super.key});
+
+  final router = GoRouter(
+    // パス (アプリが起動したとき)
+    initialLocation: '/a',
+    observers: [CustomRouterObserver()],
+    // パスと画面の組み合わせ
+    routes: [
+      GoRoute(
+        path: '/a',
+        builder: (context, state) => const PageA(),
+      ),
+      GoRoute(
+        path: '/b',
+        builder: (context, state) => const PageB(),
+      ),
+      GoRoute(
+        path: '/c',
+        builder: (context, state) => const PageC(),
+      ),
+    ],
+    redirect: (context, state) {
+      print("現在のパス: ${state.fullPath}");
+      return null;
+    },
+  );
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final index = ref.watch(indexProvider);
-
-    const items = [
-      BottomNavigationBarItem(
-        icon: Icon(Icons.person),
-        label: 'アイテムA',
-      ),
-      BottomNavigationBarItem(
-        icon: Icon(Icons.home),
-        label: 'アイテムB',
-      ),
-      BottomNavigationBarItem(
-        icon: Icon(Icons.settings),
-        label: 'アイテムC',
-      ),
-    ];
-
-    final bar = BottomNavigationBar(
-      items: items,
-      backgroundColor: Colors.red,
-      selectedItemColor: Colors.white,
-      unselectedItemColor: Colors.black,
-      currentIndex: index,
-      onTap: (index) {
-        ref.read(indexProvider.notifier).state = index;
-      },
-    );
-
-    final pages = [
-      PageA(),
-      PageB(),
-      PageC(),
-    ];
-
-    return Scaffold(
-      body: pages[index],
-      bottomNavigationBar: bar,
+  Widget build(BuildContext context) {
+    return MaterialApp.router(
+      routeInformationProvider: router.routeInformationProvider,
+      routeInformationParser: router.routeInformationParser,
+      routerDelegate: router.routerDelegate,
     );
   }
 }

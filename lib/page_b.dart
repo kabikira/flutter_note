@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 //
 // 画面 B
@@ -9,16 +10,18 @@ class PageB extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.green[100],
-      body: const Center(
-        child: Text(
-          '画面 B',
-          style: TextStyle(
-            // 文字の大きさ
-            fontSize: 20,
-            // 文字の太さ
-            fontWeight: FontWeight.bold,
-          ),
+      appBar: AppBar(
+        backgroundColor: Colors.blue,
+        title: const Text('画面 B'),
+      ),
+      body: Center(
+        child: ElevatedButton(
+          onPressed: () {
+            // context.pop(); // A へ戻る
+            Navigator.of(context).pop();
+          },
+          style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
+          child: const Text('< 戻る'),
         ),
       ),
     );
