@@ -1,49 +1,62 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_note/side_menu.dart';
+import 'package:flutter_note/page_a.dart';
+import 'package:flutter_note/page_b.dart';
+import 'package:flutter_note/page_c.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 main() {
-  // アップバー
-  final appBar = AppBar(
-    title: const Text('appBar'),
-  );
+  const app = MaterialApp(home: Root());
+  const scope = ProviderScope(child: app);
+  runApp(scope);
+}
 
-  // ドロワー
-  const drawer = Drawer(
-    child: SideMenu(),
-  );
+final indexProvider = StateProvider((ref) {
+  // 変化させたいデータ
+  return 0;
+});
 
-  // エンドドロワー
-  const endDrawer = Drawer(
-    child: SideMenu(),
-  );
+class Root extends ConsumerWidget {
+  const Root({super.key});
 
-  // フローティングアクションボタン (FAB)
-  final fab = FloatingActionButton(
-    onPressed: () {
-      debugPrint('FAB が押されました');
-    },
-    child: const Text('FAB'),
-  );
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final index = ref.watch(indexProvider);
 
-  // ボディ
-  const body = Center(
-    child: Text('body'),
-  );
+    const items = [
+      BottomNavigationBarItem(
+        icon: Icon(Icons.person),
+        label: 'アイテムA',
+      ),
+      BottomNavigationBarItem(
+        icon: Icon(Icons.home),
+        label: 'アイテムB',
+      ),
+      BottomNavigationBarItem(
+        icon: Icon(Icons.settings),
+        label: 'アイテムC',
+      ),
+    ];
 
-  // 画面
-  final scaffold = Scaffold(
-    appBar: appBar, // アップバー
-    drawer: drawer, // ドロワー
-    endDrawer: endDrawer, // エンドドロワー
-    floatingActionButton: fab, // フローティングアクションボタン (FAB)
-    body: body, // ボディ
-  );
+    final bar = BottomNavigationBar(
+      items: items,
+      backgroundColor: Colors.red,
+      selectedItemColor: Colors.white,
+      unselectedItemColor: Colors.black,
+      currentIndex: index,
+      onTap: (index) {
+        ref.read(indexProvider.notifier).state = index;
+      },
+    );
 
-  // アプリ
-  final app = MaterialApp(
-    debugShowCheckedModeBanner: false,
-    home: scaffold,
-  );
+    final pages = [
+      PageA(),
+      PageB(),
+      PageC(),
+    ];
 
-  runApp(app);
+    return Scaffold(
+      body: pages[index],
+      bottomNavigationBar: bar,
+    );
+  }
 }
