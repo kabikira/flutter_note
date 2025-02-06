@@ -1,67 +1,90 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_note/page_a.dart';
-import 'package:flutter_note/page_b.dart';
-import 'package:flutter_note/page_c.dart';
-import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /*
   最新のFlutterに対応するため、動画と少しコードが変わりました
 */
 
-class CustomRouterObserver extends NavigatorObserver {
-  @override
-  void didPop(Route route, Route? previousRoute) {
-    super.didPop(route, previousRoute);
-    print(
-        "🔄 画面が戻った: ${route.settings.name} → ${previousRoute?.settings.name}");
-
-    if (previousRoute?.settings.name == "/a") {
-      print("✅ PageBからPageAに戻ってきた！");
-      // ここでAPIリロードやデータ更新が可能
-    }
-  }
+void main() {
+  const app = MaterialApp(home: Home());
+  const scope = ProviderScope(child: app);
+  runApp(scope);
 }
 
-main() {
-  final app = App();
-  runApp(app);
-}
+final isOnProvider = StateProvider((ref) {
+  return true;
+});
 
-// アプリ全体
-class App extends StatelessWidget {
-  App({super.key});
+final valueProvider = StateProvider((ref) {
+  return 0.0;
+});
 
-  final router = GoRouter(
-    // パス (アプリが起動したとき)
-    initialLocation: '/a',
-    observers: [CustomRouterObserver()],
-    // パスと画面の組み合わせ
-    routes: [
-      GoRoute(
-        path: '/a',
-        builder: (context, state) => const PageA(),
-      ),
-      GoRoute(
-        path: '/b',
-        builder: (context, state) => const PageB(),
-      ),
-      GoRoute(
-        path: '/c',
-        builder: (context, state) => const PageC(),
-      ),
-    ],
-    redirect: (context, state) {
-      print("現在のパス: ${state.fullPath}");
-      return null;
-    },
-  );
+final rangeProvider = StateProvider((ref) {
+  return const RangeValues(0.1, 0.9);
+});
+
+class Home extends ConsumerWidget {
+  const Home({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp.router(
-      routeInformationProvider: router.routeInformationProvider,
-      routeInformationParser: router.routeInformationParser,
-      routerDelegate: router.routerDelegate,
+  Widget build(BuildContext context, WidgetRef ref) {
+    // トグルスイッチ
+    final isOn = ref.watch(isOnProvider);
+    final toggleSwitch = Switch(
+      value: isOn,
+      onChanged: (isOn) {
+        ref.read(isOnProvider.notifier).state = isOn;
+      },
+      // 色を変える
+      activeColor: Colors.blue,
+      activeTrackColor: Colors.green,
+      inactiveThumbColor: Colors.black,
+      inactiveTrackColor: Colors.grey,
+    );
+
+    // スライダー
+    final value = ref.watch(valueProvider);
+    final slider = Slider(
+      value: value,
+      onChanged: (value) {
+        ref.read(valueProvider.notifier).state = value;
+      },
+      // 色を変える
+      thumbColor: Colors.blue,
+      activeColor: Colors.green,
+      inactiveColor: Colors.black12,
+    );
+
+    // レンジスライダー
+    final range = ref.watch(rangeProvider);
+    final rangeSlider = RangeSlider(
+      values: range,
+      onChanged: (value) {
+        ref.read(rangeProvider.notifier).state = value;
+      },
+      // 色を変える
+      activeColor: Colors.green,
+      inactiveColor: Colors.black12,
+    );
+
+    final con = Container(
+      width: value * 300,
+      height: 20,
+      color: Colors.blue,
+    );
+
+    return Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            toggleSwitch,
+            slider,
+            rangeSlider,
+            con,
+          ],
+        ),
+      ),
     );
   }
 }
