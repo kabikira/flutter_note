@@ -11,16 +11,16 @@ void main() {
   runApp(scope);
 }
 
-final isOnProvider = StateProvider((ref) {
-  return true;
+// 選ばれたラジオボタンID
+final radioIdProvider = StateProvider<String?>((ref) {
+  // 最初はどれも選ばれていないので null
+  return null;
 });
 
-final valueProvider = StateProvider((ref) {
-  return 0.0;
-});
-
-final rangeProvider = StateProvider((ref) {
-  return const RangeValues(0.1, 0.9);
+// 選ばれたチェックボックスIDたち
+final checkedIdsProvider = StateProvider<Set<String>>((ref) {
+  // 最初は空っぽ {}
+  return {};
 });
 
 class Home extends ConsumerWidget {
@@ -28,63 +28,70 @@ class Home extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // トグルスイッチ
-    final isOn = ref.watch(isOnProvider);
-    final toggleSwitch = Switch(
-      value: isOn,
-      onChanged: (isOn) {
-        ref.read(isOnProvider.notifier).state = isOn;
-      },
-      // 色を変える
-      activeColor: Colors.blue,
-      activeTrackColor: Colors.green,
-      inactiveThumbColor: Colors.black,
-      inactiveTrackColor: Colors.grey,
-    );
+    final radioId = ref.watch(radioIdProvider);
+    final checkedIds = ref.watch(checkedIdsProvider);
 
-    // スライダー
-    final value = ref.watch(valueProvider);
-    final slider = Slider(
-      value: value,
-      onChanged: (value) {
-        ref.read(valueProvider.notifier).state = value;
-      },
-      // 色を変える
-      thumbColor: Colors.blue,
-      activeColor: Colors.green,
-      inactiveColor: Colors.black12,
-    );
+    void onChangedRadio(String? id) {
+      ref.read(radioIdProvider.notifier).state = id!;
+    }
 
-    // レンジスライダー
-    final range = ref.watch(rangeProvider);
-    final rangeSlider = RangeSlider(
-      values: range,
-      onChanged: (value) {
-        ref.read(rangeProvider.notifier).state = value;
-      },
-      // 色を変える
-      activeColor: Colors.green,
-      inactiveColor: Colors.black12,
-    );
+    void onChangedCheckbox(String id) {
+      final newSet = Set.of(checkedIds);
+      if (checkedIds.contains(id)) {
+        newSet.remove(id);
+      } else {
+        newSet.add(id);
+      }
+      ref.read(checkedIdsProvider.notifier).state = newSet;
+    }
 
-    final con = Container(
-      width: value * 300,
-      height: 20,
-      color: Colors.blue,
-    );
-
-    return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            toggleSwitch,
-            slider,
-            rangeSlider,
-            con,
-          ],
+    // 縦に並べる
+    final col = Column(
+      children: [
+        RadioListTile(
+          groupValue: radioId,
+          onChanged: onChangedRadio,
+          value: 'A',
+          title: const Text('ラジオボタンA'),
         ),
-      ),
+        RadioListTile(
+          groupValue: radioId,
+          onChanged: onChangedRadio,
+          value: 'B',
+          title: const Text('ラジオボタンB'),
+        ),
+        RadioListTile(
+          groupValue: radioId,
+          onChanged: onChangedRadio,
+          value: 'C',
+          title: const Text('ラジオボタンC'),
+        ),
+        CheckboxListTile(
+          value: checkedIds.contains('A'),
+          onChanged: (check) => onChangedCheckbox('A'),
+          title: const Text('チェックボックスB'),
+        ),
+        CheckboxListTile(
+          onChanged: (check) => onChangedCheckbox('B'),
+          value: checkedIds.contains('B'),
+          title: const Text('チェックボックスB'),
+        ),
+        CheckboxListTile(
+          onChanged: (check) => onChangedCheckbox('C'),
+          value: checkedIds.contains('C'),
+          title: const Text('チェックボックスC'),
+        ),
+        ElevatedButton(
+          onPressed: () {
+            debugPrint(radioId);
+            debugPrint(checkedIds.toString());
+          },
+          child: const Text('OK'),
+        )
+      ],
+    );
+    return Scaffold(
+      body: col,
     );
   }
 }
