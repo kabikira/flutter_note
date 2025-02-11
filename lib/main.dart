@@ -1,84 +1,133 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_note/fish.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+/// メイン関数
 void main() {
-  const app = MaterialApp(home: Home());
-  const scope = ProviderScope(child: app);
-  runApp(scope);
+  // ホーム画面
+  const home = Home();
+  // アプリ
+  const app = MaterialApp(home: home);
+  runApp(app);
 }
 
-// 魚データの状態管理
-final fishProvider = StateProvider((ref) {
-  return const Fish(
-    name: 'マグロ',
-    size: 200,
-    price: 300,
-  );
-});
+/// 馬のモデルクラス
+class Horse {
+  // 名前
+  final String name;
+  // アイコン画像
+  final String iconUri;
 
-// ホーム画面
-class Home extends ConsumerWidget {
-  const Home({super.key});
+  // コンストラクタ
+  Horse(this.name, this.iconUri);
+}
+
+/// カードにしたいモデルたち
+final models = [
+  Horse('ナリタブライアン', 'horse1.png'),
+  Horse('スペシャルウィーク', 'horse2.png'),
+  Horse('オグリキャップ', 'horse3.png'),
+  Horse('サイレンススズカ', 'horse4.png'),
+  Horse('トウカイテイオー', 'horse5.png'),
+];
+
+/// 馬のカード Widget
+class HorseCard extends StatelessWidget {
+  const HorseCard({
+    super.key,
+    required this.model,
+  });
+  // データが入ったモデル
+  final Horse model;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    // 魚データ
-    final fish = ref.watch(fishProvider);
-    // ABCリスト
-
-    // 名前テキスト
-    final nameText = Text(
-      '名前: ${fish.name}',
+  Widget build(BuildContext context) {
+    // 画像
+    final img = SizedBox(
+      height: 100,
+      child: Image.asset(
+        'assets/images/${model.iconUri}',
+      ),
     );
 
-    // 大きさテキスト
-    final sizeText = Text(
-      '大きさ: ${fish.size} cm',
+    // 名前
+    final text = Text(
+      model.name,
+      style: const TextStyle(fontSize: 20),
     );
 
-    // 値段テキスト
-    final priceText = Text(
-      '値段: ${fish.price} 万円',
-    );
-
-    // ボタン
-    final button = ElevatedButton(
-      onPressed: () => onPressed(ref),
-      child: const Text('変更する'),
-    );
-
-    // 縦に並べるカラム
-    final column = Column(
+    // 画像と名前を縦に並べる
+    final imgAndText = Column(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        nameText,
-        sizeText,
-        priceText,
-        button,
+        img,
+        text,
       ],
     );
 
-    // 画面の真ん中にカラムを置く
-    return Scaffold(
-      body: Center(
-        child: column,
+    // カード部分を作るコンテナ
+    return Container(
+      decoration: BoxDecoration(
+        // 色
+        color: Colors.orange,
+        // 角丸
+        borderRadius: BorderRadius.circular(20),
+        // 影
+        boxShadow: [
+          BoxShadow(
+            // 影の設定
+            color: Colors.black.withOpacity(0.2), //色
+            spreadRadius: 2, // 広がりの大きさ
+            blurRadius: 2, // ぼかしの強さ
+            offset: const Offset(0, 2), // 方向
+          ),
+        ],
       ),
+      child: imgAndText,
     );
   }
+}
 
-  // ボタンを押したときの関数
-  void onPressed(WidgetRef ref) {
-    // 今画面に出ている魚
-    final fish = ref.read(fishProvider);
+// モデル => ウィジェット に変換する関数
+Widget modelToWidget(Horse model) {
+  // ページの部分
+  return Container(
+    // カードの周りに 10 ずつスペースを空ける
+    padding: const EdgeInsets.all(10),
+    // 中身は カード
+    child: HorseCard(model: model),
+  );
+  // カードを使う
+}
 
-    // 入れ物ごと変えた 新しい魚
-    final newFish = fish.copyWith(
-      // 値段は 500 にする
-      price: 500,
+// ホーム画面
+class Home extends StatelessWidget {
+  const Home({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    // カルーセル
+    final carousel = PageView.builder(
+      // カルーセルのコントローラー
+      controller: PageController(
+        // 左右のカードがどのくらい見えるかのバランスを決める
+        viewportFraction: 0.6,
+      ),
+      // カードの数 = モデルの数
+      itemCount: models.length,
+      // モデルをWidgetに変換する関数
+      itemBuilder: (c, i) => modelToWidget(models[i]),
     );
 
-    // 画面を変更する
-    ref.read(fishProvider.notifier).state = newFish;
+    // 画面
+    return Scaffold(
+      // 真ん中
+      body: Center(
+        // 横長のコンテナ
+        child: Container(
+          height: 200,
+          color: Colors.white,
+          child: carousel,
+        ),
+      ),
+    );
   }
 }
