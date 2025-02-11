@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-/*
-  最新のFlutterに対応するため、動画と少しコードが変わりました
-*/
+import 'package:percent_indicator/percent_indicator.dart';
 
 void main() {
   const app = MaterialApp(home: Home());
@@ -11,16 +8,8 @@ void main() {
   runApp(scope);
 }
 
-// 選ばれたラジオボタンID
-final radioIdProvider = StateProvider<String?>((ref) {
-  // 最初はどれも選ばれていないので null
-  return null;
-});
-
-// 選ばれたチェックボックスIDたち
-final checkedIdsProvider = StateProvider<Set<String>>((ref) {
-  // 最初は空っぽ {}
-  return {};
+final percentProvider = StateProvider((ref) {
+  return 0.00;
 });
 
 class Home extends ConsumerWidget {
@@ -28,70 +17,69 @@ class Home extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final radioId = ref.watch(radioIdProvider);
-    final checkedIds = ref.watch(checkedIdsProvider);
+    final percent = ref.watch(percentProvider);
 
-    void onChangedRadio(String? id) {
-      ref.read(radioIdProvider.notifier).state = id!;
-    }
+    final circular = CircularPercentIndicator(
+      percent: percent,
+      backgroundColor: Colors.yellow,
+      progressColor: Colors.green,
+      animation: true,
+      animationDuration: 200,
+      animateFromLastPercent: true,
+      radius: 60.0,
+      lineWidth: 20.0,
+      center: Text('${percent * 100}%'),
+    );
 
-    void onChangedCheckbox(String id) {
-      final newSet = Set.of(checkedIds);
-      if (checkedIds.contains(id)) {
-        newSet.remove(id);
-      } else {
-        newSet.add(id);
-      }
-      ref.read(checkedIdsProvider.notifier).state = newSet;
-    }
+    final linear = LinearPercentIndicator(
+      percent: percent,
+      backgroundColor: Colors.yellow,
+      progressBorderColor: Colors.green,
+      animation: true,
+      animationDuration: 200,
+      animateFromLastPercent: true,
+      alignment: MainAxisAlignment.center,
+      lineHeight: 20,
+      width: 300,
+    );
 
-    // 縦に並べる
-    final col = Column(
+    final button = ElevatedButton(
+        onPressed: () => onPressed(ref), child: const Text('スタート'));
+
+    final colum = Column(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        RadioListTile(
-          groupValue: radioId,
-          onChanged: onChangedRadio,
-          value: 'A',
-          title: const Text('ラジオボタンA'),
-        ),
-        RadioListTile(
-          groupValue: radioId,
-          onChanged: onChangedRadio,
-          value: 'B',
-          title: const Text('ラジオボタンB'),
-        ),
-        RadioListTile(
-          groupValue: radioId,
-          onChanged: onChangedRadio,
-          value: 'C',
-          title: const Text('ラジオボタンC'),
-        ),
-        CheckboxListTile(
-          value: checkedIds.contains('A'),
-          onChanged: (check) => onChangedCheckbox('A'),
-          title: const Text('チェックボックスB'),
-        ),
-        CheckboxListTile(
-          onChanged: (check) => onChangedCheckbox('B'),
-          value: checkedIds.contains('B'),
-          title: const Text('チェックボックスB'),
-        ),
-        CheckboxListTile(
-          onChanged: (check) => onChangedCheckbox('C'),
-          value: checkedIds.contains('C'),
-          title: const Text('チェックボックスC'),
-        ),
-        ElevatedButton(
-          onPressed: () {
-            debugPrint(radioId);
-            debugPrint(checkedIds.toString());
-          },
-          child: const Text('OK'),
-        )
+        circular,
+        linear,
+        button,
       ],
     );
+
     return Scaffold(
-      body: col,
+      body: colum,
     );
+  }
+
+  void onPressed(WidgetRef ref) async {
+    // 1秒まつ
+    await Future.delayed(const Duration(seconds: 1));
+    // 20%
+    ref.read(percentProvider.notifier).state = 0.20;
+    // 1秒まつ
+    await Future.delayed(const Duration(seconds: 1));
+    // 40%
+    ref.read(percentProvider.notifier).state = 0.40;
+    // 1秒まつ
+    await Future.delayed(const Duration(seconds: 1));
+    // 60%
+    ref.read(percentProvider.notifier).state = 0.60;
+    // 1秒まつ
+    await Future.delayed(const Duration(seconds: 1));
+    // 80%
+    ref.read(percentProvider.notifier).state = 0.80;
+    // 1秒まつ
+    await Future.delayed(const Duration(seconds: 1));
+    // 100%
+    ref.read(percentProvider.notifier).state = 1.00;
   }
 }
