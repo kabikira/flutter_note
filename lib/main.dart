@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_note/fish.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:percent_indicator/percent_indicator.dart';
 
 void main() {
   const app = MaterialApp(home: Home());
@@ -8,78 +8,77 @@ void main() {
   runApp(scope);
 }
 
-final percentProvider = StateProvider((ref) {
-  return 0.00;
+// 魚データの状態管理
+final fishProvider = StateProvider((ref) {
+  return const Fish(
+    name: 'マグロ',
+    size: 200,
+    price: 300,
+  );
 });
 
+// ホーム画面
 class Home extends ConsumerWidget {
   const Home({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final percent = ref.watch(percentProvider);
+    // 魚データ
+    final fish = ref.watch(fishProvider);
+    // ABCリスト
 
-    final circular = CircularPercentIndicator(
-      percent: percent,
-      backgroundColor: Colors.yellow,
-      progressColor: Colors.green,
-      animation: true,
-      animationDuration: 200,
-      animateFromLastPercent: true,
-      radius: 60.0,
-      lineWidth: 20.0,
-      center: Text('${percent * 100}%'),
+    // 名前テキスト
+    final nameText = Text(
+      '名前: ${fish.name}',
     );
 
-    final linear = LinearPercentIndicator(
-      percent: percent,
-      backgroundColor: Colors.yellow,
-      progressBorderColor: Colors.green,
-      animation: true,
-      animationDuration: 200,
-      animateFromLastPercent: true,
-      alignment: MainAxisAlignment.center,
-      lineHeight: 20,
-      width: 300,
+    // 大きさテキスト
+    final sizeText = Text(
+      '大きさ: ${fish.size} cm',
     );
 
+    // 値段テキスト
+    final priceText = Text(
+      '値段: ${fish.price} 万円',
+    );
+
+    // ボタン
     final button = ElevatedButton(
-        onPressed: () => onPressed(ref), child: const Text('スタート'));
+      onPressed: () => onPressed(ref),
+      child: const Text('変更する'),
+    );
 
-    final colum = Column(
+    // 縦に並べるカラム
+    final column = Column(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        circular,
-        linear,
+        nameText,
+        sizeText,
+        priceText,
         button,
       ],
     );
 
+    // 画面の真ん中にカラムを置く
     return Scaffold(
-      body: colum,
+      body: Center(
+        child: column,
+      ),
     );
   }
 
-  void onPressed(WidgetRef ref) async {
-    // 1秒まつ
-    await Future.delayed(const Duration(seconds: 1));
-    // 20%
-    ref.read(percentProvider.notifier).state = 0.20;
-    // 1秒まつ
-    await Future.delayed(const Duration(seconds: 1));
-    // 40%
-    ref.read(percentProvider.notifier).state = 0.40;
-    // 1秒まつ
-    await Future.delayed(const Duration(seconds: 1));
-    // 60%
-    ref.read(percentProvider.notifier).state = 0.60;
-    // 1秒まつ
-    await Future.delayed(const Duration(seconds: 1));
-    // 80%
-    ref.read(percentProvider.notifier).state = 0.80;
-    // 1秒まつ
-    await Future.delayed(const Duration(seconds: 1));
-    // 100%
-    ref.read(percentProvider.notifier).state = 1.00;
+  // ボタンを押したときの関数
+  void onPressed(WidgetRef ref) {
+    // 今画面に出ている魚
+    final fish = ref.read(fishProvider);
+
+    // 入れ物ごと変えた 新しい魚
+    final newFish = fish.copyWith(
+      // 値段は 500 にする
+      price: 500,
+    );
+
+    // 画面を変更する
+    ref.read(fishProvider.notifier).state = newFish;
   }
 }
