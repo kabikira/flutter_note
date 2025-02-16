@@ -1,26 +1,7 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_note/accordion.dart';
 
-/*
-  最新のFlutterに対応するため、動画と少しコードが変わりました
-*/
-
-/// メイン関数
 void main() {
-  // OFL を守るために このコードが必要
-  LicenseRegistry.addLicense(() async* {
-    final license = await rootBundle.loadString(
-      'google_fonts/OFL.txt',
-    );
-    yield LicenseEntryWithLineBreaks(
-      ['google_fonts'],
-      license,
-    );
-  });
-
-  // アプリ
   const app = MyApp();
   runApp(app);
 }
@@ -32,6 +13,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
+      debugShowCheckedModeBanner: false,
       home: HomePage(),
     );
   }
@@ -43,36 +25,46 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // テキスト
-    final text = Text(
-      'バナナ美味しい',
-      style: GoogleFonts.hachiMaruPop(
-        fontSize: 30,
-        fontWeight: FontWeight.w600,
-      ),
-    );
-
-    // ボタンを押した時の関数
-    void onPressed() {
-      showLicensePage(context: context);
-    }
-
-    // ボタン
-    final button = ElevatedButton(
-      onPressed: onPressed,
-      child: const Text('ボタン'),
-    );
-
-    return Scaffold(
-      body: Center(
-        // カラムで縦に並べる
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            text,
-            button,
-          ],
+    // アコーディオンを縦に並べるカラム
+    final column = Column(
+      children: [
+        // バナナのアコーディオン
+        Accordion(
+          title: 'バナナ',
+          headColor: Colors.orange,
+          bodyColor: Colors.orange.shade200,
+          imageName: 'assets/images/banana.png',
         ),
+        // リンゴのアコーディオン
+        Accordion(
+          title: 'リンゴ',
+          headColor: Colors.red,
+          bodyColor: Colors.red.shade200,
+          imageName: 'assets/images/apple.png',
+        ),
+        // メロンのアコーディオン
+        Accordion(
+          title: 'メロン',
+          headColor: Colors.green,
+          bodyColor: Colors.green.shade200,
+          imageName: 'assets/images/melon.png',
+        ),
+        // ブドウのアコーディオン
+        Accordion(
+          title: 'ブドウ',
+          headColor: Colors.indigo,
+          bodyColor: Colors.indigo.shade200,
+          imageName: 'assets/images/grape.png',
+        ),
+      ],
+    );
+
+    // 画面
+    return Scaffold(
+      // 画面をはみ出したらスクロールできるようにする
+      body: SingleChildScrollView(
+        // 上で作ったカラム
+        child: column,
       ),
     );
   }
