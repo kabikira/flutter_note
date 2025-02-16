@@ -7,6 +7,7 @@ environment:
   sdk: ^3.5.3
 
 dependencies:
+  google_fonts:
   freezed_annotation:
   go_router:
   flutter:
@@ -28,5 +29,6 @@ dev_dependencies:
 flutter:
   assets:
     - assets/images/
+    - assets/google_fonts/
   uses-material-design: true
 
