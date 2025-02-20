@@ -1,22 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_note/accordion.dart';
+import 'package:flutter_note/screen_pod.dart';
 
-void main() {
-  const app = MyApp();
+/* 
+
+  # 注意
+    - 動画で説明した device_preview パッケージは メンテナンスが停止中です
+    - 再開までの間 代わりに device_preview_minus パッケージをお使いください
+
+*/
+
+void main() async {
+  const home = HomePage();
+  const app = MaterialApp(home: home);
   runApp(app);
-}
-
-/// アプリ本体
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: HomePage(),
-    );
-  }
 }
 
 /// ホーム画面
@@ -25,46 +21,46 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // アコーディオンを縦に並べるカラム
-    final column = Column(
-      children: [
-        // バナナのアコーディオン
-        Accordion(
-          title: 'バナナ',
-          headColor: Colors.orange,
-          bodyColor: Colors.orange.shade200,
-          imageName: 'assets/images/banana.png',
-        ),
-        // リンゴのアコーディオン
-        Accordion(
-          title: 'リンゴ',
-          headColor: Colors.red,
-          bodyColor: Colors.red.shade200,
-          imageName: 'assets/images/apple.png',
-        ),
-        // メロンのアコーディオン
-        Accordion(
-          title: 'メロン',
-          headColor: Colors.green,
-          bodyColor: Colors.green.shade200,
-          imageName: 'assets/images/melon.png',
-        ),
-        // ブドウのアコーディオン
-        Accordion(
-          title: 'ブドウ',
-          headColor: Colors.indigo,
-          bodyColor: Colors.indigo.shade200,
-          imageName: 'assets/images/grape.png',
-        ),
-      ],
-    );
+    // watch
+    final screen = ScreenRef(context).watch(screenProvider);
 
-    // 画面
+    String text1;
+    if (screen.sizeClass == ScreenSizeClass.phone) {
+      text1 = 'これはスマホサイズです';
+    } else {
+      text1 = 'これはスマホサイズではありません';
+    }
+
+    String text2;
+    if (screen.orientation == Orientation.portrait) {
+      text2 = 'これは縦向きです';
+    } else {
+      text2 = 'これは縦向きではありません';
+    }
+
     return Scaffold(
-      // 画面をはみ出したらスクロールできるようにする
-      body: SingleChildScrollView(
-        // 上で作ったカラム
-        child: column,
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            // 文字 1
+            Text(
+              text1,
+              style: const TextStyle(fontSize: 20),
+            ),
+            // 文字 2
+            Text(
+              text2,
+              style: const TextStyle(fontSize: 20),
+            ),
+            // 色付きコンテナ
+            Container(
+              color: Colors.orange,
+              width: screen.designW(200), // 画面サイズによって変わる大きさ
+              height: screen.designH(100),
+            ),
+          ],
+        ),
       ),
     );
   }
