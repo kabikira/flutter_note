@@ -1,65 +1,36 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_note/screen_pod.dart';
+import 'package:flutter_note/season_dropdown.dart';
+import 'package:flutter_note/season_flower.dart';
+import 'package:flutter_note/season_time.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-/* 
-
-  # 注意
-    - 動画で説明した device_preview パッケージは メンテナンスが停止中です
-    - 再開までの間 代わりに device_preview_minus パッケージをお使いください
-
-*/
-
-void main() async {
-  const home = HomePage();
-  const app = MaterialApp(home: home);
-  runApp(app);
+void main() {
+  const app = MyApp();
+  const scope = ProviderScope(child: app);
+  runApp(scope);
 }
 
-/// ホーム画面
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const MaterialApp(
+      home: HomePage(),
+    );
+  }
+}
+
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // watch
-    final screen = ScreenRef(context).watch(screenProvider);
-
-    String text1;
-    if (screen.sizeClass == ScreenSizeClass.phone) {
-      text1 = 'これはスマホサイズです';
-    } else {
-      text1 = 'これはスマホサイズではありません';
-    }
-
-    String text2;
-    if (screen.orientation == Orientation.portrait) {
-      text2 = 'これは縦向きです';
-    } else {
-      text2 = 'これは縦向きではありません';
-    }
-
-    return Scaffold(
+    return const Scaffold(
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            // 文字 1
-            Text(
-              text1,
-              style: const TextStyle(fontSize: 20),
-            ),
-            // 文字 2
-            Text(
-              text2,
-              style: const TextStyle(fontSize: 20),
-            ),
-            // 色付きコンテナ
-            Container(
-              color: Colors.orange,
-              width: screen.designW(200), // 画面サイズによって変わる大きさ
-              height: screen.designH(100),
-            ),
-          ],
+          children: [SeasonDropdown(), SeasonTime(), SeasonFlower()],
         ),
       ),
     );
