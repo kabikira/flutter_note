@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_note/env.dart';
 import 'package:flutter_note/season_dropdown.dart';
 import 'package:flutter_note/season_flower.dart';
 import 'package:flutter_note/season_time.dart';
@@ -26,12 +27,9 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return Scaffold(
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [SeasonDropdown(), SeasonTime(), SeasonFlower()],
-        ),
+        child: Text(Env.pass1),
       ),
     );
   }

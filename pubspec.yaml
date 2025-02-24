@@ -7,6 +7,7 @@ environment:
   sdk: ^3.5.3
 
 dependencies:
+  envied:
   riverpod_annotation:
   flutter_riverpod: 
   device_preview_minus:
@@ -20,6 +21,7 @@ dependencies:
   cupertino_icons: ^1.0.8
 
 dev_dependencies:
+  envied_generator:
   riverpod_generator:
   freezed:
   build_runner:
