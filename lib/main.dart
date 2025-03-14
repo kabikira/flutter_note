@@ -1,14 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_note/env.dart';
-import 'package:flutter_note/season_dropdown.dart';
-import 'package:flutter_note/season_flower.dart';
-import 'package:flutter_note/season_time.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 void main() {
-  const app = MyApp();
-  const scope = ProviderScope(child: app);
-  runApp(scope);
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -17,19 +10,47 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
-      home: HomePage(),
+      home: Scaffold(
+        body: Center(
+          child: MyStack(),
+        ),
+      ),
     );
   }
 }
 
-class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+class MyStack extends StatelessWidget {
+  const MyStack({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Text(Env.pass1),
+    return SafeArea(
+      child: Column(
+        children: [
+          const Text('テスト\nテストうんち'),
+          Stack(
+            clipBehavior: Clip.none,
+            children: [
+              // 緑の四角形
+              Container(
+                width: 120,
+                height: 150,
+                decoration: const BoxDecoration(
+                  color: Colors.green,
+                ),
+              ),
+              // 赤い丸（右上に配置）
+              const Positioned(
+                right: -10, // 外にはみ出るように調整
+                top: -20,
+                child: CircleAvatar(
+                  radius: 25,
+                  backgroundColor: Colors.red,
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
