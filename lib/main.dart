@@ -12,9 +12,44 @@ class MyApp extends StatelessWidget {
     return const MaterialApp(
       home: Scaffold(
         body: Center(
-          child: MyStack(),
+          child: ExampleOverflow(),
         ),
       ),
+    );
+  }
+}
+
+class ExampleOverflow extends StatelessWidget {
+  const ExampleOverflow({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final stack = Stack(
+      clipBehavior: Clip.none,
+      children: [
+        Container(
+          margin: const EdgeInsets.all(40),
+          color: Colors.blue,
+        ),
+        Align(
+          alignment: Alignment.topRight,
+          child: Container(
+            width: 80,
+            height: 80,
+            decoration: const BoxDecoration(
+              color: Colors.red,
+              shape: BoxShape.circle,
+            ),
+          ),
+        )
+      ],
+    );
+
+    return Container(
+      width: 300,
+      height: 300,
+      color: Colors.yellow,
+      child: stack,
     );
   }
 }
